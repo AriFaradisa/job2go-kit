@@ -6,6 +6,20 @@ import 'package:job2go_kit/state.dart';
 
 typedef RefreshCallback = Future<void> Function();
 
+enum PageState {
+  /// state ketika list loading
+  loading,
+
+  /// state ketika list terjadi error
+  error,
+
+  /// state ketika list menampilkan konten
+  content,
+
+  /// state ketika list kosong
+  empty,
+}
+
 class Job2GoScrollView extends StatefulWidget {
   /// Digunakan untuk mendapatkan collback ketika list di Pull Refresh
   final RefreshCallback onRefreshed;
@@ -81,10 +95,9 @@ class Job2GoScrollView extends StatefulWidget {
 class _Job2GoScrollViewState extends State<Job2GoScrollView> {
   ScrollController scrollController = ScrollController();
   List<dynamic> items = [];
-  bool isLoading = false;
+  PageState state = PageState.loading;
   bool isEndOfList = false;
   bool isErrorList = false;
-  bool isError = false;
 
   @override
   void initState() {
@@ -92,7 +105,7 @@ class _Job2GoScrollViewState extends State<Job2GoScrollView> {
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
-        if (!isErrorList && !isLoading && !isError) {
+        if (state == PageState.content) {
           widget.controller.addPage();
           if (!isEndOfList) {
             debugPrint("Load More");
@@ -105,9 +118,8 @@ class _Job2GoScrollViewState extends State<Job2GoScrollView> {
     widget.controller.addListener(() {
       setState(() {
         items = widget.controller.items;
-        isLoading = widget.controller.isLoading;
+        state = widget.controller.state;
         isErrorList = widget.controller.isErrorList;
-        isError = widget.controller.isError;
         isEndOfList = widget.controller.isEndOfList;
       });
     });
@@ -234,60 +246,59 @@ class _Job2GoScrollViewState extends State<Job2GoScrollView> {
   }
 
   _buildList(BoxConstraints constraints) {
-    if (isLoading) {
-      return const Center(
-        child: LoadingFullState(),
-      );
-    }
-    if (items.isNotEmpty && !isLoading) {
-      return Column(
-        children: <Widget>[
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 5.0, top: 5.0),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return widget.itemBuilder(context, index);
-            },
+    switch (state) {
+      case PageState.loading:
+        return const Center(
+          child: LoadingFullState(),
+        );
+      case PageState.error:
+        return ErrorFullState(
+          onTap: () {
+            if (widget.onError != null) {
+              widget.onError!();
+            } else {
+              widget.onRefreshed();
+            }
+          },
+        );
+      case PageState.empty:
+        return Center(
+            child: EmptyFullState(
+          icon: SizedBox(
+            width: 120,
+            height: 120,
+            child: Image.asset(widget.imageAsset),
           ),
-          isEndOfList
-              ? const EndOfListState()
-              : isErrorList
-                  ? ErrorListState(onTap: () {
-                      if (widget.onErrorList != null) {
-                        widget.onErrorList!();
-                      } else {
-                        widget.onLoadMore();
-                      }
-                    })
-                  : const LoadingOfListState(),
-          const SizedBox(
-            height: 130.0,
-          ),
-        ],
-      );
-    }
-    if (isError) {
-      return ErrorFullState(
-        onTap: () {
-          if (widget.onError != null) {
-            widget.onError!();
-          } else {
-            widget.onRefreshed();
-          }
-        },
-      );
-    } else {
-      return Center(
-          child: EmptyFullState(
-        icon: SizedBox(
-          width: 120,
-          height: 120,
-          child: Image.asset(widget.imageAsset),
-        ),
-        text: widget.text,
-      ));
+          text: widget.text,
+        ));
+      case PageState.content:
+        return Column(
+          children: <Widget>[
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 5.0, top: 5.0),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return widget.itemBuilder(context, index);
+              },
+            ),
+            isEndOfList
+                ? const EndOfListState()
+                : isErrorList
+                    ? ErrorListState(onTap: () {
+                        if (widget.onErrorList != null) {
+                          widget.onErrorList!();
+                        } else {
+                          widget.onLoadMore();
+                        }
+                      })
+                    : const LoadingOfListState(),
+            const SizedBox(
+              height: 130.0,
+            ),
+          ],
+        );
     }
   }
 }
@@ -300,6 +311,7 @@ class Job2GoScrollController extends ChangeNotifier {
   bool isLoading = false;
   int page = 0;
   int limit = 10;
+  PageState state = PageState.loading;
 
   Job2GoScrollController({required this.limit});
 
@@ -311,10 +323,9 @@ class Job2GoScrollController extends ChangeNotifier {
   void clearItems() {
     items.clear();
     page = 0;
-    isError = false;
+    state = PageState.loading;
     isEndOfList = false;
     isErrorList = false;
-    isLoading = true;
     notifyListeners();
   }
 
@@ -330,15 +341,13 @@ class Job2GoScrollController extends ChangeNotifier {
       isErrorList = false;
     }
     if (page == 0) {
-      isLoading = false;
-      isError = false;
+      state = PageState.content;
     }
     notifyListeners();
   }
 
   void handleError() {
-    isLoading = false;
-    isError = true;
+    state = PageState.error;
     notifyListeners();
   }
 }
