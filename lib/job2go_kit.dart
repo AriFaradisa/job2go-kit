@@ -134,114 +134,120 @@ class _Job2GoScrollViewState extends State<Job2GoScrollView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return RefreshIndicator(
-            onRefresh: () {
-              widget.controller.clearItems();
-              return widget.onRefreshed();
-            },
-            child: SingleChildScrollView(
-                controller: scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: _buildList(constraints))),
-          );
-        }),
-        if (widget.hasFilter)
-          Positioned.fill(
-              child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                        if (widget.onLeftClick == null) {
-                          debugPrint(
-                              "==== Job2GoScrollView : Tombol filter KIRI belum di implement ====");
-                        } else {
-                          widget.onLeftClick!();
-                        }
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(30),
-                                topLeft: Radius.circular(30))),
-                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(widget.leftIcon ?? Icons.filter_alt_outlined),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              widget.leftText ?? "Filter",
-                              style: const TextStyle(fontSize: 18),
-                            )
-                          ],
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Stack(
+          children: [
+            LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+              return RefreshIndicator(
+                onRefresh: () {
+                  widget.controller.clearItems();
+                  return widget.onRefreshed();
+                },
+                child: SingleChildScrollView(
+                    controller: scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                      ),
+                        child: _buildList(constraints))),
+              );
+            }),
+            if (widget.hasFilter)
+              Positioned.fill(
+                  child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    Container(
-                      color: Colors.grey[300],
-                      width: 1,
-                      height: 24,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).unfocus();
-                        if (widget.onRightClick == null) {
-                          debugPrint(
-                              "==== Job2GoScrollView : Tombol filter KANAN belum di implement ====");
-                        } else {
-                          widget.onRightClick!();
-                        }
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(30),
-                                topRight: Radius.circular(30))),
-                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(widget.rightIcon ?? Icons.sort),
-                            const SizedBox(
-                              width: 10,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                            if (widget.onLeftClick == null) {
+                              debugPrint(
+                                  "==== Job2GoScrollView : Tombol filter KIRI belum di implement ====");
+                            } else {
+                              widget.onLeftClick!();
+                            }
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(30),
+                                    topLeft: Radius.circular(30))),
+                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(widget.leftIcon ??
+                                    Icons.filter_alt_outlined),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  widget.leftText ?? "Filter",
+                                  style: const TextStyle(fontSize: 18),
+                                )
+                              ],
                             ),
-                            Text(widget.rightText ?? "Urutkan",
-                                style: const TextStyle(fontSize: 18))
-                          ],
+                          ),
                         ),
-                      ),
+                        Container(
+                          color: Colors.grey[300],
+                          width: 1,
+                          height: 24,
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                            if (widget.onRightClick == null) {
+                              debugPrint(
+                                  "==== Job2GoScrollView : Tombol filter KANAN belum di implement ====");
+                            } else {
+                              widget.onRightClick!();
+                            }
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(30),
+                                    topRight: Radius.circular(30))),
+                            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(widget.rightIcon ?? Icons.sort),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(widget.rightText ?? "Urutkan",
+                                    style: const TextStyle(fontSize: 18))
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ))
-      ],
+              ))
+          ],
+        ),
+      ),
     );
   }
 
