@@ -246,3 +246,145 @@ class Job2GoDoubleButton extends StatelessWidget {
     );
   }
 }
+
+enum Status { ACTIVE, INACTIVE, DISABLED }
+
+class RoundedButton extends StatelessWidget {
+  final BuildContext context;
+  final String text;
+  final double radius;
+  final double padding;
+  final Function onTap;
+  final Status status;
+  final EdgeInsets? margin;
+  final Widget? icon;
+  final Color? color;
+  final Color? textColor;
+
+  RoundedButton(
+      {required this.context,
+        required this.text,
+        required this.radius,
+        required this.padding,
+        required this.onTap,
+        required this.status,
+        this.margin,
+        this.icon,
+        this.color,
+        this.textColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin:
+      margin ?? EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 20),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(
+                color: status == Status.ACTIVE
+                    ? color ?? Colors.red
+                    : status == Status.DISABLED
+                    ? Colors.grey[400]!
+                    : textColor ?? Colors.red),
+            borderRadius: BorderRadius.circular(radius)),
+        child: Material(
+          color: status == Status.ACTIVE
+              ? color ?? Colors.red
+              : status == Status.DISABLED
+              ? Colors.grey[400]!
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(radius),
+          child: InkWell(
+            splashColor: status == Status.DISABLED ? Colors.transparent : null,
+            borderRadius: BorderRadius.circular(radius),
+            onTap: () {
+              if (status != Status.DISABLED)
+                onTap();
+            },
+            child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(padding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    icon ?? Container(),
+                    Flexible(
+                      child: Text(
+                        text,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: status == Status.ACTIVE
+                                ? textColor ?? Colors.white
+                                : status == Status.DISABLED
+                                ? Colors.white
+                                : status == Status.INACTIVE
+                                ? textColor ?? Colors.grey
+                                : Colors.red,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SocialButton extends StatelessWidget {
+  final Function onTap;
+  final String buttonText;
+  final String image;
+  final Color leftColor;
+  final Color rightColor;
+  const SocialButton(
+      {Key? key,
+        required this.onTap,
+        required this.buttonText,
+        required this.image,
+        required this.leftColor,
+        required this.rightColor})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(10, 12, 8, 12),
+              decoration: BoxDecoration(
+                  color: leftColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(100),
+                      bottomLeft: Radius.circular(100))),
+              child: Text(
+                buttonText,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
+          Container(
+              padding: EdgeInsets.all(7.5),
+              decoration: BoxDecoration(
+                  color: rightColor,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(100),
+                      bottomRight: Radius.circular(100))),
+              child: SizedBox(
+                width: 23,
+                height: 23,
+                child: Image.asset(image),
+              ))
+        ],
+      ),
+    );
+  }
+}
