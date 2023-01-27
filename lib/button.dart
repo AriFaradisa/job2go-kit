@@ -249,7 +249,7 @@ class Job2GoDoubleButton extends StatelessWidget {
 
 enum Status { ACTIVE, INACTIVE, DISABLED }
 
-class RoundedButton extends StatelessWidget {
+class Job2GoRoundedButton extends StatelessWidget {
   final BuildContext context;
   final String text;
   final double radius;
@@ -261,7 +261,7 @@ class RoundedButton extends StatelessWidget {
   final Color? color;
   final Color? textColor;
 
-  RoundedButton(
+  Job2GoRoundedButton(
       {required this.context,
         required this.text,
         required this.radius,
@@ -333,13 +333,13 @@ class RoundedButton extends StatelessWidget {
   }
 }
 
-class SocialButton extends StatelessWidget {
+class Job2GoSocialButton extends StatelessWidget {
   final Function onTap;
   final String buttonText;
   final String image;
   final Color leftColor;
   final Color rightColor;
-  const SocialButton(
+  const Job2GoSocialButton(
       {Key? key,
         required this.onTap,
         required this.buttonText,
